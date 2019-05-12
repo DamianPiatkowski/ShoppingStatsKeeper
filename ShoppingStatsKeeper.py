@@ -4,9 +4,9 @@ from email.message import EmailMessage
 import json
 import os
 import smtplib
-import matplotlib.pyplot as plt
-import matplotlib.rcsetup as rcsetup
-import matplotlib
+#import matplotlib.pyplot as plt
+#import matplotlib.rcsetup as rcsetup
+#import matplotlib
 
 WELCOME = """
 Hello there!
@@ -26,7 +26,7 @@ def main():
     load_json()
     save_new_entry()
     do_statistics()
-    make_graph()
+    #make_graph()
     send_email()
     save_to_json()
     change_goal()
@@ -261,8 +261,8 @@ def do_statistics():
         except KeyError:
             msg_content = (
                 f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
-                f"days this month.\nYou spent {str(
-                    stat_total)} {curr} in total. Your " f"goal is to spend no more than {g}, "
+                f"days this month.\nYou spent {str(stat_total)} {curr} in total. "
+                f"Your goal is to spend no more than {g}, "
                 f"so {'congrats' if int(stat_total) <= int(g) else 'better luck next time.'}"
                 f"\nOn average you spent {str(aver_total)} {curr} a week, "
                 f"{str(aver_meat)}on meat and {str(aver_extra)} on "

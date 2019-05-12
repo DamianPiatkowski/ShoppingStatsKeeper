@@ -3,3 +3,6 @@ venv/
 
 # IDE specific settings
 .idea/
+
+# json files storing data
+*.json
