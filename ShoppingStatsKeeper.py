@@ -22,10 +22,10 @@ def main():
     load_settings('settings.json')
     print(WELCOME)
 
-    collect_data()
+    collect_data(settings["vegetarian?"])
     load_json()
     save_new_entry()
-    do_statistics()
+    do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"])
     #make_graph()
     send_email()
     save_to_json()
@@ -73,7 +73,7 @@ def load_settings(json_file):
             json.dump(settings, f)
 
 
-def collect_data():
+def collect_data(veg):
     """Ask three questions, make sure that the input is correct.
     Assign a list of three answers to a variable 'new'.
     """
@@ -91,7 +91,7 @@ def collect_data():
             except ValueError:
                 print("Oops! It wasn't a valid number, please try again.")
 
-        if settings["vegetarian?"].lower() == "no":
+        if veg.lower() == "no":
             while True:
                 try:
                     meat = int(input("How much did you spend on meat today? "))
@@ -115,7 +115,7 @@ def collect_data():
 
         while True:
 
-            if settings["vegetarian?"].lower() == "no":
+            if veg.lower() == "no":
                 is_correct = input("You spent {} PLN in total,"
                                    "\n{} PLN on meat and {} PLN on extra items. Is that correct?"
                                    "\nEnter Yes or No. ".format(str(total), str(meat), str(extra)))
@@ -182,7 +182,7 @@ def save_new_entry():
         data["weekly"][date] = [new]
 
 
-def do_statistics():
+def do_statistics(veg, curr, g):
     """
     Compare this month's average to the average of the 3 previous months.
     If there are not enough records, display the shorter information, otherwise
@@ -192,8 +192,6 @@ def do_statistics():
     c = average extra items expenses
     """
 
-    curr = settings["currency"]
-    g = settings["goal"]
     global msg_content
     global report_month, threemonths_before, twomonths_before, onemonth_before
 
