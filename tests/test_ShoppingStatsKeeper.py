@@ -42,11 +42,11 @@ class TestApp(unittest.TestCase):
                             "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]}}
 
         ShoppingStatsKeeper.do_statistics("no", "PLN", "500", data, datetime.date.today())
-        #self.assertEqual(ShoppingStatsKeeper.onemonth_before, "March 2019")
-        #self.assertEqual(ShoppingStatsKeeper.twomonths_before, "February 2019")
-        #self.assertEqual(ShoppingStatsKeeper.threemonths_before, "January 2019")
+        self.assertEqual(ShoppingStatsKeeper.onemonth_before, "March 2019")
+        self.assertEqual(ShoppingStatsKeeper.twomonths_before, "February 2019")
+        self.assertEqual(ShoppingStatsKeeper.threemonths_before, "January 2019")
         self.assertEqual(ShoppingStatsKeeper.report_month, "April 2019")
-        #self.assertEqual(ShoppingStatsKeeper.num_of_entries, 3)
+        self.assertEqual(ShoppingStatsKeeper.num_of_entries, 3)
 
     def test__prints_great(self):
         with patch('builtins.print') as mocked_print:

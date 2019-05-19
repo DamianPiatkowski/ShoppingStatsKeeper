@@ -25,7 +25,8 @@ def main():
     collect_data(settings["vegetarian?"])
     load_json()
     save_new_entry()
-    do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, date)
+    if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
+        do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, date)
     #make_graph()
     send_email()
     save_to_json()
@@ -194,88 +195,85 @@ def do_statistics(veg, curr, g, data, date):
     c = average extra items expenses
     """
 
-    global msg_content
-    global report_month, threemonths_before, twomonths_before
-    global onemonth_before
+    global onemonth_before, twomonths_before, threemonths_before, report_month, msg_content, num_of_entries
 
     date = date.strftime("%B %Y")
 
-    if len(data["weekly"][date]) == 1 and len(data["weekly"]) > 1:
+    report_month = (datetime.date.today() - relativedelta(months=1)).strftime("%B %Y")
 
-        report_month = (datetime.date.today() - relativedelta(months=1)).strftime("%B %Y")
-        num_of_entries = len(data["weekly"][report_month])
+    num_of_entries = len(data["weekly"][report_month])
 
-        stat_total = 0
-        stat_meat = 0
-        stat_extra = 0
+    onemonth_before = (datetime.date.today() -
+                       relativedelta(months=2)).strftime("%B %Y")
 
-        for item in data["weekly"][date]:
-            stat_total += item[0]
-            stat_meat += item[1]
-            stat_extra += item[2]
+    twomonths_before = (datetime.date.today() -
+                        relativedelta(months=3)).strftime("%B %Y")
 
-        aver_total = stat_total / num_of_entries
-        aver_meat = stat_meat / num_of_entries
-        aver_extra = stat_extra / num_of_entries
+    threemonths_before = (datetime.date.today() -
+                          relativedelta(months=4)).strftime("%B %Y")
 
-        data["average"][report_month] = [aver_total, aver_meat, aver_extra, stat_total]
+    stat_total = 0
+    stat_meat = 0
+    stat_extra = 0
 
-        onemonth_before = (datetime.date.today() -
-                           relativedelta(months=2)).strftime("%B %Y")
+    for item in data["weekly"][date]:
+        stat_total += item[0]
+        stat_meat += item[1]
+        stat_extra += item[2]
 
-        twomonths_before = (datetime.date.today() -
-                            relativedelta(months=3)).strftime("%B %Y")
+    aver_total = stat_total / num_of_entries
+    aver_meat = stat_meat / num_of_entries
+    aver_extra = stat_extra / num_of_entries
 
-        threemonths_before = (datetime.date.today() -
-                              relativedelta(months=4)).strftime("%B %Y")
+    data["average"][report_month] = [aver_total, aver_meat, aver_extra, stat_total]
 
-        try:
-            a = (data['average'][onemonth_before][0] +
-                 data['average'][twomonths_before][0] +
-                 data['average'][threemonths_before][0]) / 3
+    try:
+        a = (data['average'][onemonth_before][0] +
+             data['average'][twomonths_before][0] +
+             data['average'][threemonths_before][0]) / 3
 
-            b = (data['average'][onemonth_before][1] +
-                 data['average'][twomonths_before][1] +
-                 data['average'][threemonths_before][1]) / 3
+        b = (data['average'][onemonth_before][1] +
+             data['average'][twomonths_before][1] +
+             data['average'][threemonths_before][1]) / 3
 
-            c = (data['average'][onemonth_before][2] +
-                 data['average'][twomonths_before][2] +
-                 data['average'][threemonths_before][2]) / 3
+        c = (data['average'][onemonth_before][2] +
+             data['average'][twomonths_before][2] +
+             data['average'][threemonths_before][2]) / 3
 
-            msg_content = (
-                f"Ready for some statistics? There were {str(num_of_entries)} "
-                "shopping days "
-                f"this month.\nThis is how this month's expenses compare to "
-                f"the average of the previous 3 months..."
-                f"\nThis month's total average is {str(aver_total)} {curr}, "
-                f"compared to {str(a)} {curr} "
-                f"in the previous months.\nMeat expenses: "
-                f"{str(aver_meat)} {curr} this month "
-                f"and {str(b)} {curr} in the previous 3 months."
-                f"\nYou spent on average {str(aver_extra)} {curr} a week on extra items, "
-                f"{str(c)} {curr} in the compared period."
-                f"\nIn total you spent {str(stat_total)} this month. "
-                f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
-                f"Your goal is to spend no more than {g}. So "
-                f"{'congrats' if int(stat_total) <= int(g) else 'better luck next time.'}"
-            )
+        msg_content = (
+            f"Ready for some statistics? There were {str(num_of_entries)} "
+            "shopping days "
+            f"this month.\nThis is how this month's expenses compare to "
+            f"the average of the previous 3 months..."
+            f"\nThis month's total average is {str(aver_total)} {curr}, "
+            f"compared to {str(a)} {curr} "
+            f"in the previous months.\nMeat expenses: "
+            f"{str(aver_meat)} {curr} this month "
+            f"and {str(b)} {curr} in the previous 3 months."
+            f"\nYou spent on average {str(aver_extra)} {curr} a week on extra items, "
+            f"{str(c)} {curr} in the compared period."
+            f"\nIn total you spent {str(stat_total)} this month. "
+            f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
+            f"Your goal is to spend no more than {g}. So "
+            f"{'congrats' if stat_total <= int(g) else 'better luck next time.'}"
+        )
 
-            print(msg_content)
+        print(msg_content)
 
-        except KeyError:
-            msg_content = (
-                f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
-                f"days this month.\nYou spent {str(stat_total)} {curr} in total. "
-                f"Your goal is to spend no more than {g}, "
-                f"so {'congrats' if int(stat_total) <= int(g) else 'better luck next time.'}"
-                f"\nOn average you spent {str(aver_total)} {curr} a week, "
-                f"{str(aver_meat)}on meat and {str(aver_extra)} on "
-                f"extra items.\nWhen there is enough data, I will tell "
-                f"you how the current month compares to the average of "
-                f"the three previous ones.\nStay tuned."
-            )
+    except KeyError:
+        msg_content = (
+            f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
+            f"days this month.\nYou spent {str(stat_total)} {curr} in total. "
+            f"Your goal is to spend no more than {g}, "
+            f"so {'congrats' if stat_total <= int(g) else 'better luck next time.'}"
+            f"\nOn average you spent {str(aver_total)} {curr} a week, "
+            f"{str(aver_meat)}on meat and {str(aver_extra)} on "
+            f"extra items.\nWhen there is enough data, I will tell "
+            f"you how the current month compares to the average of "
+            f"the three previous ones.\nStay tuned."
+        )
 
-            print(msg_content)
+        print(msg_content)
 
 
 def make_graph():
