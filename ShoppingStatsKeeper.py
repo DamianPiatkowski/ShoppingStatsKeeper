@@ -25,7 +25,7 @@ def main():
     collect_data(settings["vegetarian?"])
     load_json()
     save_new_entry()
-    do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"])
+    do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, date)
     #make_graph()
     send_email()
     save_to_json()
@@ -64,7 +64,9 @@ def load_settings(json_file):
         while True:
             settings["goal"] = input("What's the maximum amount you want to spend monthly on shopping?")
 
-            if settings["goal"].isdigit() == True:
+
+
+            if type(settings["goal"]) == int:
                 break
             else:
                 print("Oops! I need a number, try again")
@@ -173,16 +175,16 @@ def save_new_entry():
     The new entry is stored as a list in the variable 'new'.
     """
     global date
-    date = datetime.date.today().strftime("%B %Y")
+    date = datetime.date.today()
 
-    if date in data["weekly"]:
-        data["weekly"][date].append(new)
+    if date.strftime("%B %Y") in data["weekly"]:
+        data["weekly"][date.strftime("%B %Y")].append(new)
 
     else:
-        data["weekly"][date] = [new]
+        data["weekly"][date.strftime("%B %Y")] = [new]
 
 
-def do_statistics(veg, curr, g):
+def do_statistics(veg, curr, g, data, date):
     """
     Compare this month's average to the average of the 3 previous months.
     If there are not enough records, display the shorter information, otherwise
@@ -193,9 +195,13 @@ def do_statistics(veg, curr, g):
     """
 
     global msg_content
-    global report_month, threemonths_before, twomonths_before, onemonth_before
+    global report_month, threemonths_before, twomonths_before
+    global onemonth_before
+
+    date = date.strftime("%B %Y")
 
     if len(data["weekly"][date]) == 1 and len(data["weekly"]) > 1:
+
         report_month = (datetime.date.today() - relativedelta(months=1)).strftime("%B %Y")
         num_of_entries = len(data["weekly"][report_month])
 
@@ -340,7 +346,7 @@ def change_goal():
 
 
 def send_email():
-    if len(data["weekly"][date]) == 1 and len(data["weekly"]) > 1:
+    if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
         msg = EmailMessage()
         msg['Subject'] = "Shopping Report"
         msg['From'] = EMAIL_ADDRESS
