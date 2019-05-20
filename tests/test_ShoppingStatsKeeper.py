@@ -78,7 +78,19 @@ class TestApp(unittest.TestCase):
             data_from_saved_json = json.load(f)
         self.assertEqual(data_from_saved_json, self.data)
         self.addCleanup(os.remove, "test.json")    
-
+   
+    @freeze_time("2019-05-08")
+    def test_save_new_entry(self):
+        # "May 2019" already exists, so the new entry should only be appended
+        ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.data, [1, 2, 3])
+        self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], "May 2019": [145, 23, 23], [1, 2, 3]},
+                "average": {"January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
+                            "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]}}
+                         
+        # New entry, "May 2019" should be added                 
+        data = {"weekly": {"April 2019": [[123, 23, 23]]}}
+        ShoppingStatsKeeper.save_new_entry(datetime.date.today(), data, [1, 2, 3])
+        self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23]], "May 2019": [[1, 2, 3]}}
 
 if __name__ == '__main__':
     unittest.main()
