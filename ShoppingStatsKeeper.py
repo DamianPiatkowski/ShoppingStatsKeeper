@@ -24,11 +24,11 @@ def main():
 
     collect_data(settings["vegetarian?"])
     load_json()
-    save_new_entry()
+    save_new_entry(datetime.date.today())
     if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
-        do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, date)
+        do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, datetime.date.today())
     #make_graph()
-    send_email()
+    send_email(datetime.date.today())
     save_to_json()
     change_goal()
 
@@ -175,9 +175,7 @@ def save_new_entry():
     otherwise append this month's list with the new entry.
     The new entry is stored as a list in the variable 'new'.
     """
-    global date
-    date = datetime.date.today()
-
+    
     if date.strftime("%B %Y") in data["weekly"]:
         data["weekly"][date.strftime("%B %Y")].append(new)
 
@@ -197,26 +195,21 @@ def do_statistics(veg, curr, g, data, date):
 
     global onemonth_before, twomonths_before, threemonths_before, report_month, msg_content, num_of_entries
 
-    date = date.strftime("%B %Y")
-
-    report_month = (datetime.date.today() - relativedelta(months=1)).strftime("%B %Y")
+    report_month = (date - relativedelta(months=1)).strftime("%B %Y")
 
     num_of_entries = len(data["weekly"][report_month])
 
-    onemonth_before = (datetime.date.today() -
-                       relativedelta(months=2)).strftime("%B %Y")
+    onemonth_before = (date - relativedelta(months=2)).strftime("%B %Y")
 
-    twomonths_before = (datetime.date.today() -
-                        relativedelta(months=3)).strftime("%B %Y")
+    twomonths_before = (date - relativedelta(months=3)).strftime("%B %Y")
 
-    threemonths_before = (datetime.date.today() -
-                          relativedelta(months=4)).strftime("%B %Y")
+    threemonths_before = (date - relativedelta(months=4)).strftime("%B %Y")                          
 
     stat_total = 0
     stat_meat = 0
     stat_extra = 0
 
-    for item in data["weekly"][date]:
+    for item in data["weekly"][report_month]:
         stat_total += item[0]
         stat_meat += item[1]
         stat_extra += item[2]
@@ -343,7 +336,7 @@ def change_goal():
             print("Oops, something went wrong. Try again with 'yes' or 'no'")
 
 
-def send_email():
+def send_email(date):
     if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
         msg = EmailMessage()
         msg['Subject'] = "Shopping Report"
