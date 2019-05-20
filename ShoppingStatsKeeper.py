@@ -32,7 +32,7 @@ def main():
   #make_graph()
   send_email(today)
   save_to_json('data.json', data)
-  change_goal()
+  change_goal('settings.json')
 
   input("Hit the enter to exit. Thanks!")
 
@@ -310,7 +310,7 @@ def make_graph():
         print("When there are enough statistics, a graph will be shown for visualization")
 
 
-def change_goal():
+def change_goal(json):
     while True:
         should_change = input(
             f'Would you like to keep {settings["goal"]} {settings["currency"]} as your monthly maximum goal?')
@@ -324,7 +324,7 @@ def change_goal():
                 else:
                     print("Oops! I need a number, try again")
 
-            with open('settings.json', 'w') as f:
+            with open(json, 'w') as f:
                 json.dump(settings, f)
 
             break
