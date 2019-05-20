@@ -168,7 +168,7 @@ def save_to_json(json, updated_dict):
     with open(json, 'w') as f:
         json.dump(updated_dict, f)
         
-def save_new_entry():
+def save_new_entry(date):
     """Display the date in the format 'month year'.
     Create a new list for this month if it's the first shopping of the month,
     otherwise append this month's list with the new entry.
