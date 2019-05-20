@@ -91,6 +91,17 @@ class TestApp(unittest.TestCase):
         data = {"weekly": {"April 2019": [[123, 23, 23]]}}
         ShoppingStatsKeeper.save_new_entry(datetime.date.today(), data, [1, 2, 3])
         self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23]], "May 2019": [[1, 2, 3]}}
-
+                                                                                                           
+    def test_change_goal(self):
+        with open("test_settings.json", "w") as write_file:
+            json.dump({"currency": "PLN", "vegetarian?": "no", "goal": "500"}, write_file)   
+        with patch('builtins.input') as mocked_input:
+            mocked_input.side_effect = ('no', 800)                                                                                                   
+            ShoppingStatsKeeper.change_goal(test_settings.json)
+            with open('test.json') as f:
+                settings_from_saved_json = json.load(f)  
+            self.assertEqual(settings_from_saved_json, {"currency": "PLN", "vegetarian?": "no", "goal": "800"})                                                                                               
+        self.addCleanup(os.remove, 'test_settings.json')   
+                                                                                                           
 if __name__ == '__main__':
     unittest.main()
