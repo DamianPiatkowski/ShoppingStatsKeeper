@@ -26,7 +26,7 @@ def main():
 
   collect_data(settings["vegetarian?"])
   load_json()
-  save_new_entry(today)
+  save_new_entry(today, data, new)
   if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
       do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, today)
   #make_graph()
@@ -170,7 +170,7 @@ def save_to_json(json, updated_dict):
     with open(json, 'w') as f:
         json.dump(updated_dict, f)
         
-def save_new_entry(date):
+def save_new_entry(date, data, new_entry):
     """Display the date in the format 'month year'.
     Create a new list for this month if it's the first shopping of the month,
     otherwise append this month's list with the new entry.
@@ -178,10 +178,10 @@ def save_new_entry(date):
     """
     
     if date.strftime("%B %Y") in data["weekly"]:
-        data["weekly"][date.strftime("%B %Y")].append(new)
+        data["weekly"][date.strftime("%B %Y")].append(new_entry)
 
     else:
-        data["weekly"][date.strftime("%B %Y")] = [new]
+        data["weekly"][date.strftime("%B %Y")] = [new_entry]
 
 def do_statistics(veg, curr, g, data, date):
     """
