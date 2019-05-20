@@ -19,20 +19,22 @@ EMAIL_PASSWORD = os.environ.get('EMAIL_PASS')
 
 
 def main():
-    load_settings('settings.json')
-    print(WELCOME)
+  today = datetime.date.today()
+  
+  load_settings('settings.json')
+  print(WELCOME)
 
-    collect_data(settings["vegetarian?"])
-    load_json()
-    save_new_entry(datetime.date.today())
-    if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
-        do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, datetime.date.today())
-    #make_graph()
-    send_email(datetime.date.today())
-    save_to_json('data.json', data)
-    change_goal()
+  collect_data(settings["vegetarian?"])
+  load_json()
+  save_new_entry(today)
+  if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
+      do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, today)
+  #make_graph()
+  send_email(today)
+  save_to_json('data.json', data)
+  change_goal()
 
-    input("Hit the enter to exit. Thanks!")
+  input("Hit the enter to exit. Thanks!")
 
 
 def load_settings(json_file):
