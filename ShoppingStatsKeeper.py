@@ -29,7 +29,7 @@ def main():
         do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, datetime.date.today())
     #make_graph()
     send_email(datetime.date.today())
-    save_to_json()
+    save_to_json('data.json', data)
     change_goal()
 
     input("Hit the enter to exit. Thanks!")
@@ -163,12 +163,11 @@ def load_json():
             json.dump(data, f)
 
 
-def save_to_json():
+def save_to_json(json, updated_dict):
     """Save the updated dictionary to the json file."""
-    with open('data.json', 'w') as f:
-        json.dump(data, f)
-
-
+    with open(json, 'w') as f:
+        json.dump(updated_dict, f)
+        
 def save_new_entry():
     """Display the date in the format 'month year'.
     Create a new list for this month if it's the first shopping of the month,
@@ -181,7 +180,6 @@ def save_new_entry():
 
     else:
         data["weekly"][date.strftime("%B %Y")] = [new]
-
 
 def do_statistics(veg, curr, g, data, date):
     """
