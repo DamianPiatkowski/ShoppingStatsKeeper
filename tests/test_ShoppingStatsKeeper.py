@@ -16,8 +16,16 @@ class TestApp(unittest.TestCase):
         self.data = {"weekly": {"April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], "May 2019": [145, 23, 23]},
                 "average": {"January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
                             "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]}}
+        self.short_message = (             
+            "Ready for statistics?\nThere were 3 shopping "
+            "days this month.\nYou spent 702 PLN in total. "
+            "Your goal is to spend no more than 500, so better luck next time."
+            "\nOn average you spent 234 PLN a week, 15 on meat and 27 on "
+            "extra items.\nWhen there is enough data, I will tell "
+            "you how the current month compares to the average of "
+            "the three previous ones.\nStay tuned."
+        )
 
-    
     def test_load_settings_existing(self):
         ShoppingStatsKeeper.load_settings('fixtures/test_existing_settings.json')
 
@@ -50,7 +58,12 @@ class TestApp(unittest.TestCase):
         self.assertEqual(ShoppingStatsKeeper.threemonths_before, "January 2019")
         self.assertEqual(ShoppingStatsKeeper.report_month, "April 2019")
         self.assertEqual(ShoppingStatsKeeper.num_of_entries, 3)
-
+        self.assertEqual(ShoppingStatsKeeper.stat_total, 702)
+        self.assertEqual(ShoppingStatsKeeper.aver_total, 234)
+        self.assertEqual(ShoppingStatsKeeper.aver_meat, 15)
+        self.assertEqual(ShoppingStatsKeeper.aver_extra, 27)
+        self.assertEqual(ShoppingStatsKeeper.data["average"][report_month], [234, 15, 27, 702])
+        self.assertEqual(ShoppingStatsKeeper.msg_content, self.short_message)
     def test_prints_great(self):
         with patch('builtins.print') as mocked_print:
             with patch('builtins.input') as mocked_input:
@@ -98,9 +111,14 @@ class TestApp(unittest.TestCase):
         with patch('builtins.input') as mocked_input:
             mocked_input.side_effect = ('no', 800)                                                                                                   
             ShoppingStatsKeeper.change_goal(test_settings.json)
-            with open('test.json') as f:
-                settings_from_saved_json = json.load(f)  
-            self.assertEqual(settings_from_saved_json, {"currency": "PLN", "vegetarian?": "no", "goal": "800"})                                                                                               
+        with open('test_settings.json') as f:
+            settings_from_saved_json = json.load(f)  
+            self.assertEqual(settings_from_saved_json, {"currency": "PLN", "vegetarian?": "no", "goal": "800"})
+        with patch('builtins.print') as mocked_print:                                                                                                   
+            with patch('builtins.input') as mocked_input:
+                mocked_input.side_effect = 'whatever'
+                ShoppingStatsKeeper.change_goal(test_settings.json)
+                mocked_print.assert_called_with("Oops, something went wrong. Try again with 'yes' or 'no'")                                                                                              
         self.addCleanup(os.remove, 'test_settings.json')   
                                                                                                            
 if __name__ == '__main__':
