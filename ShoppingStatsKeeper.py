@@ -69,7 +69,7 @@ def load_settings(json_file):
 
 
 
-            if type(settings["goal"]) == int:
+            if settings["goal"].isdigit() == True:
                 break
             else:
                 print("Oops! I need a number, try again")
@@ -176,12 +176,13 @@ def save_new_entry(date, data, new_entry):
     otherwise append this month's list with the new entry.
     The new entry is stored as a list in the variable 'new'.
     """
-    
+
     if date.strftime("%B %Y") in data["weekly"]:
         data["weekly"][date.strftime("%B %Y")].append(new_entry)
-
+        #return data #tests were failing to recognise this variable when there is no return
     else:
         data["weekly"][date.strftime("%B %Y")] = [new_entry]
+        #return data
 
 def do_statistics(veg, curr, g, data, date):
     """

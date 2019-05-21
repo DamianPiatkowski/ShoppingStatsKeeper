@@ -16,6 +16,8 @@ class TestApp(unittest.TestCase):
         self.data = {"weekly": {"April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], "May 2019": [145, 23, 23]},
                 "average": {"January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
                             "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]}}
+        self.short_data = {"weekly": {"April 2019": [[123, 23, 23]]}}
+
         self.short_message = (             
             "Ready for statistics?\nThere were 3 shopping "
             "days this month.\nYou spent 702 PLN in total. "
@@ -33,19 +35,19 @@ class TestApp(unittest.TestCase):
 
     def test_load_settings_creating(self):
         with patch('builtins.input') as mocked_input:
-            mocked_input.side_effect = ('PLN', 'yes', 'yes', 600)
+            mocked_input.side_effect = ('PLN', 'yes', 'yes', '600')
 
             ShoppingStatsKeeper.load_settings('fixtures/test_not_existing_settings.json')
 
-            #self.assertEqual(
-            #assert os.path.exists('fixtures/test_not_existing_settings.json'), True)
+            # self.assertEqual(
+            # assert os.path.exists('fixtures/test_not_existing_settings.json'), True)
 
             self.assertTrue(os.path.exists('fixtures/test_not_existing_settings.json'))
 
             with open('fixtures/test_not_existing_settings.json') as t:
                 testing = json.load(t)
 
-            self.assertDictEqual(testing, {"currency": "PLN", "vegetarian?": "yes", "goal": 600})
+            self.assertDictEqual(testing, {"currency": "PLN", "vegetarian?": "yes", "goal": '600'})
 
             self.addCleanup(os.remove, 'fixtures/test_not_existing_settings.json')
 
@@ -96,13 +98,12 @@ class TestApp(unittest.TestCase):
     def test_save_new_entry(self):
         # "May 2019" already exists, so the new entry should only be appended
         ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.data, [1, 2, 3])
-        self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], "May 2019": [145, 23, 23], [1, 2, 3]},
+        self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], "May 2019": [[145, 23, 23], [1, 2, 3]],
                 "average": {"January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
                             "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]}}
                          
-        # New entry, "May 2019" should be added                 
-        data = {"weekly": {"April 2019": [[123, 23, 23]]}}
-        ShoppingStatsKeeper.save_new_entry(datetime.date.today(), data, [1, 2, 3])
+        # New entry, "May 2019" should be added
+        ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.short_data, [1, 2, 3])
         self.assertEqual(ShoppingStatsKeeper.data, {"weekly": {"April 2019": [[123, 23, 23]], "May 2019": [[1, 2, 3]}}
                                                                                                            
     def test_change_goal(self):

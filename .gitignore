@@ -6,3 +6,6 @@ venv/
 
 # json files storing data
 *.json
+
+# test file
+*elo*
