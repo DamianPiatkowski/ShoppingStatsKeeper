@@ -311,7 +311,7 @@ def make_graph():
         print("When there are enough statistics, a graph will be shown for visualization")
 
 
-def change_goal(json):
+def change_goal(json_file):
     while True:
         should_change = input(
             f'Would you like to keep {settings["goal"]} {settings["currency"]} as your monthly maximum goal?')
@@ -325,7 +325,7 @@ def change_goal(json):
                 else:
                     print("Oops! I need a number, try again")
 
-            with open(json, 'w') as f:
+            with open(json_file, 'w') as f:
                 json.dump(settings, f)
 
             break
