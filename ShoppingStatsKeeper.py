@@ -165,9 +165,9 @@ def load_json():
             json.dump(data, f)
 
 
-def save_to_json(json, updated_dict):
+def save_to_json(json_file, updated_dict):
     """Save the updated dictionary to the json file."""
-    with open(json, 'w') as f:
+    with open(json_file, 'w') as f:
         json.dump(updated_dict, f)
         
 def save_new_entry(date, data, new_entry):
