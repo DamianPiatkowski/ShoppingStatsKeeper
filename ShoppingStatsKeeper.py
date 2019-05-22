@@ -33,9 +33,9 @@ def main():
           settings["vegetarian?"], settings["currency"], settings["goal"], data, today
       )
   #make_graph()
-  send_email(today)
+  #send_email(today)
   save_to_json('data.json', data)
-  change_goal('settings.json')
+  change_goal('settings.json', settings)
 
   input("Hit the enter to exit. Thanks!")
 
@@ -190,10 +190,10 @@ def save_new_entry(date, data, new_entry):
 
     if date.strftime("%B %Y") in data["weekly"]:
         data["weekly"][date.strftime("%B %Y")].append(new_entry)
-        #return data #tests were failing to recognise this variable when there is no return
+        return data #tests were failing to recognise this variable when there is no return
     else:
         data["weekly"][date.strftime("%B %Y")] = [new_entry]
-        #return data
+        return data
 
 def do_statistics(veg, curr, g, data, date):
     """
@@ -206,6 +206,7 @@ def do_statistics(veg, curr, g, data, date):
     """
 
     global onemonth_before, twomonths_before, threemonths_before, report_month, msg_content, num_of_entries
+    global stat_total, aver_meat, aver_extra, aver_total
 
     report_month = (date - relativedelta(months=1)).strftime("%B %Y")
 
@@ -332,7 +333,7 @@ def make_graph():
         print("When there are enough statistics, a graph will be shown for visualization")
 
 
-def change_goal(json_file):
+def change_goal(json_file, settings):
     """Each time the program is run, 
     the user will have a chance to change their set goal. 
     If they dedide to do so, the new value will replace the old one
@@ -350,7 +351,7 @@ def change_goal(json_file):
                     "What's the maximum amount you want to spend monthly on shopping?"
                 )
 
-                if settings["goal"].isdigit() == True:
+                if str(settings["goal"]).isdigit() == True:
                     break
                 else:
                     print("Oops! I need a number, try again")
