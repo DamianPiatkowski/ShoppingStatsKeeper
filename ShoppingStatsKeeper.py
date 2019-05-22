@@ -27,8 +27,11 @@ def main():
   collect_data(settings["vegetarian?"])
   load_json()
   save_new_entry(today, data, new)
+
   if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
-      do_statistics(settings["vegetarian?"], settings["currency"], settings["goal"], data, today)
+      do_statistics(
+          settings["vegetarian?"], settings["currency"], settings["goal"], data, today
+      )
   #make_graph()
   send_email(today)
   save_to_json('data.json', data)
@@ -38,7 +41,8 @@ def main():
 
 
 def load_settings(json_file):
-    """If it's the first time the program is run, create a json to store the settings.
+    """If it's the first time the program is run, 
+    create a json to store the settings.
     Otherwise, just load them from the already existing json.
     """
     global settings
@@ -51,7 +55,10 @@ def load_settings(json_file):
         settings = {}
         while True:
             settings["currency"] = input("What's your currency?")
-            confirmation = input("Your currency is {}, correct?".format(settings["currency"]))
+            
+            confirmation = input(
+                "Your currency is {}, correct?".format(settings["currency"])
+            )
             if confirmation.lower() == "yes":
                 break
             else:
@@ -65,9 +72,9 @@ def load_settings(json_file):
                 print("Invalid input, only 'Yes' or 'No' please, try again!")
 
         while True:
-            settings["goal"] = input("What's the maximum amount you want to spend monthly on shopping?")
-
-
+            settings["goal"] = input(
+                "What's the maximum amount you want to spend monthly on shopping?"
+            )
 
             if settings["goal"].isdigit() == True:
                 break
@@ -121,13 +128,17 @@ def collect_data(veg):
         while True:
 
             if veg.lower() == "no":
-                is_correct = input("You spent {} PLN in total,"
+                is_correct = input(
+                    "You spent {} PLN in total,"
                                    "\n{} PLN on meat and {} PLN on extra items. Is that correct?"
-                                   "\nEnter Yes or No. ".format(str(total), str(meat), str(extra)))
+                                   "\nEnter Yes or No. ".format(str(total), str(meat), str(extra))
+                )
             else:
-                is_correct = input("You spent {} PLN in total,"
+                is_correct = input(
+                    "You spent {} PLN in total,"
                                    "\nand {} PLN was on extra items. Is that correct?"
-                                   "\nEnter Yes or No. ".format(str(total), str(extra)))
+                                   "\nEnter Yes or No. ".format(str(total), str(extra))
+                )
 
             if is_correct.lower() in ["yes", "no"]:
                 break
@@ -219,7 +230,9 @@ def do_statistics(veg, curr, g, data, date):
     aver_meat = stat_meat / num_of_entries
     aver_extra = stat_extra / num_of_entries
 
-    data["average"][report_month] = [aver_total, aver_meat, aver_extra, stat_total]
+    data["average"][report_month] = [
+        aver_total, aver_meat, aver_extra, stat_total
+    ]
 
     try:
         a = (data['average'][onemonth_before][0] +
@@ -278,23 +291,31 @@ def make_graph():
         ]
 
         average_totals = [
-            data["average"][threemonths_before][0], data["average"][twomonths_before][0],
-            data["average"][onemonth_before][0], data["average"][report_month][0]
+            data["average"][threemonths_before][0], 
+            data["average"][twomonths_before][0],
+            data["average"][onemonth_before][0], 
+            data["average"][report_month][0]
         ]
 
         average_meat = [
-            data["average"][threemonths_before][1], data["average"][twomonths_before][1],
-            data["average"][onemonth_before][1], data["average"][report_month][1]
+            data["average"][threemonths_before][1], 
+            data["average"][twomonths_before][1],
+            data["average"][onemonth_before][1], 
+            data["average"][report_month][1]
         ]
 
         average_extra = [
-            data["average"][threemonths_before][2], data["average"][twomonths_before][2],
-            data["average"][onemonth_before][2], data["average"][report_month][2]
+            data["average"][threemonths_before][2], 
+            data["average"][twomonths_before][2],
+            data["average"][onemonth_before][2], 
+            data["average"][report_month][2]
         ]
 
         totals = [
-            data["average"][threemonths_before][3], data["average"][twomonths_before][3],
-            data["average"][onemonth_before][3], data["average"][report_month][3]
+            data["average"][threemonths_before][3], 
+            data["average"][twomonths_before][3],
+            data["average"][onemonth_before][3], 
+            data["average"][report_month][3]
         ]
 
         plt.plot(month, average_totals, color='green')
@@ -312,13 +333,22 @@ def make_graph():
 
 
 def change_goal(json_file):
+    """Each time the program is run, 
+    the user will have a chance to change their set goal. 
+    If they dedide to do so, the new value will replace the old one
+    in the settings.json file which is required as a parameter.
+    """
     while True:
         should_change = input(
-            f'Would you like to keep {settings["goal"]} {settings["currency"]} as your monthly maximum goal?')
+            f'Would you like to keep {settings["goal"]} '
+            f'{settings["currency"]} as your monthly maximum goal?'
+        )
 
         if should_change.lower() == "no":
             while True:
-                settings["goal"] = input("What's the maximum amount you want to spend monthly on shopping?")
+                settings["goal"] = input(
+                    "What's the maximum amount you want to spend monthly on shopping?"
+                )
 
                 if settings["goal"].isdigit() == True:
                     break
