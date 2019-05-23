@@ -39,7 +39,6 @@ def main():
 
   input("Hit the enter to exit. Thanks!")
 
-
 def load_settings(json_file):
     """If it's the first time the program is run, 
     create a json to store the settings.
@@ -227,26 +226,26 @@ def do_statistics(veg, curr, g, data, date):
         stat_meat += item[1]
         stat_extra += item[2]
 
-    aver_total = stat_total / num_of_entries
-    aver_meat = stat_meat / num_of_entries
-    aver_extra = stat_extra / num_of_entries
+    aver_total = round(stat_total / num_of_entries)
+    aver_meat = round(stat_meat / num_of_entries)
+    aver_extra = round(stat_extra / num_of_entries)
 
     data["average"][report_month] = [
         aver_total, aver_meat, aver_extra, stat_total
     ]
 
     try:
-        a = (data['average'][onemonth_before][0] +
+        a = round((data['average'][onemonth_before][0] +
              data['average'][twomonths_before][0] +
-             data['average'][threemonths_before][0]) / 3
+             data['average'][threemonths_before][0]) / 3)
 
-        b = (data['average'][onemonth_before][1] +
+        b = round((data['average'][onemonth_before][1] +
              data['average'][twomonths_before][1] +
-             data['average'][threemonths_before][1]) / 3
+             data['average'][threemonths_before][1]) / 3)
 
-        c = (data['average'][onemonth_before][2] +
+        c = round((data['average'][onemonth_before][2] +
              data['average'][twomonths_before][2] +
-             data['average'][threemonths_before][2]) / 3
+             data['average'][threemonths_before][2]) / 3)
 
         msg_content = (
             f"Ready for some statistics? There were {str(num_of_entries)} "
@@ -351,7 +350,7 @@ def change_goal(json_file, settings):
                     "What's the maximum amount you want to spend monthly on shopping?"
                 )
 
-                if str(settings["goal"]).isdigit() == True:
+                if settings["goal"].isdigit() == True:
                     break
                 else:
                     print("Oops! I need a number, try again")
