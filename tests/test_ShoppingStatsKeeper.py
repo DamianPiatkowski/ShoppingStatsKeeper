@@ -11,13 +11,13 @@ class TestApp(unittest.TestCase):
 
     def setUp(self):
         self.data = {
-            "weekly": {
-                "April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], 
-                                "May 2019": [145, 23, 23]
-            },
+            "weekly": {        
+                "April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]],
+                "May 2019": [[145, 23, 23], [1, 2, 3]]
+            }, 
             "average": {
-                "January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
-                            "March 2019": [455, 12, 34, 1600], "April 2019": [700, 23, 34, 2000]
+                "January 2019": [120, 55, 44, 600], 'February 2019': [240, 88, 99, 900], 
+                'March 2019': [455, 12, 34, 1600], 'April 2019': [700, 23, 34, 2000]
             }
         }
         
@@ -91,7 +91,7 @@ class TestApp(unittest.TestCase):
     
     def test_save_to_json(self):
         with open("test.json", "w") as write_file:
-            json.dump({"weekly": {"April 2019": [123, 12, 23]}}, write_file)
+            json.dump({"weekly": {"April 2019": [[123, 12, 23]]}}, write_file)
 
         ShoppingStatsKeeper.save_to_json("test.json", self.data)
         with open('test.json') as f:
@@ -119,16 +119,16 @@ class TestApp(unittest.TestCase):
         )   
                          
         # New entry, "May 2019" should be added
-        #ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.short_data, [1, 2, 3])
-        #self.assertEqual(
-            #ShoppingStatsKeeper.data,
-            #{
-                #"weekly": {
-                    #"April 2019": [[123, 23, 23]],
-                           #"May 2019": [[1, 2, 3]]
-                #}
-            #}
-        #)
+        result2 = ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.short_data, [1, 2, 3])
+        self.assertEqual(
+            result2,
+            {
+                "weekly": {
+                    "April 2019": [[123, 23, 23]],
+                           "May 2019": [[1, 2, 3]]
+                }
+            }
+        )
                 
     def test_change_goal(self):
         with open("test_settings.json", "w") as write_file:
