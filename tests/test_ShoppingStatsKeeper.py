@@ -10,6 +10,9 @@ from unittest.mock import patch
 class TestApp(unittest.TestCase):
 
     def setUp(self):
+
+        self.maxDiff = None
+
         self.data = {
             "weekly": {        
                 "April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]],
@@ -33,6 +36,22 @@ class TestApp(unittest.TestCase):
             "extra items.\nWhen there is enough data, I will tell "
             "you how the current month compares to the average of "
             "the three previous ones.\nStay tuned."
+        )
+
+        self.long_message = (
+            "Ready for some statistics? There were 3 shopping days "
+            "this month.\nThis is how this month's expenses compare to "
+            "the average of the previous 3 months..."
+            "\nThis month's total average is 234 PLN, "
+            "compared to 272 PLN "
+            "in the previous months.\nMeat expenses: "
+            "15 PLN this month and 52 PLN in the previous 3 months."
+            "\nYou spent on average 27 PLN a week on extra items, "
+            "59 PLN in the compared period."
+            "\nIn total you spent 702 this month. "
+            "In March 2019 it was 1600. "
+            "Your goal is to spend no more than 500. So "
+            "better luck next time."
         )
 
     def test_load_settings_existing(self):
@@ -68,8 +87,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(ShoppingStatsKeeper.aver_total, 234)
         self.assertEqual(ShoppingStatsKeeper.aver_meat, 15)
         self.assertEqual(ShoppingStatsKeeper.aver_extra, 27)
-        self.assertEqual(ShoppingStatsKeeper.data["average"][report_month], [234, 15, 27, 702])
-        self.assertEqual(ShoppingStatsKeeper.msg_content, self.short_message)
+        self.assertEqual(ShoppingStatsKeeper.msg_content, self.long_message)
     
     def test_prints_great(self):
         with patch('builtins.print') as mocked_print:
@@ -109,7 +127,7 @@ class TestApp(unittest.TestCase):
             {
                 "weekly": {
                     "April 2019": [[123, 23, 23], [456, 23, 34], [123, 0, 23]], 
-                           "May 2019": [[145, 23, 23], [1, 2, 3]]
+                           "May 2019": [[145, 23, 23], [1, 2, 3], [1, 2, 3]]
                 },
                 "average": {
                     "January 2019": [120, 55, 44, 600], "February 2019": [240, 88, 99, 900],
@@ -134,11 +152,11 @@ class TestApp(unittest.TestCase):
         with open("test_settings.json", "w") as write_file:
             json.dump(self.settings, write_file)
         with patch('builtins.input') as mocked_input:
-            mocked_input.side_effect = ('no', 900)
+            mocked_input.side_effect = ('no', '900')
             ShoppingStatsKeeper.change_goal('test_settings.json', self.settings)
         with open('test_settings.json') as f:
             settings_from_saved_json = json.load(f)  
-            self.assertEqual(settings_from_saved_json, {"currency": "PLN", "vegetarian?": "no", "goal": 900})
+            self.assertEqual(settings_from_saved_json, {"currency": "PLN", "vegetarian?": "no", "goal": '900'})
 
         #with patch('builtins.print') as mocked_print:
             #with patch('builtins.input') as mocked_input:

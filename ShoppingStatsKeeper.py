@@ -282,7 +282,6 @@ def do_statistics(veg, curr, g, data, date):
 
         print(msg_content)
 
-
 def make_graph():
     try:
 
@@ -350,7 +349,7 @@ def change_goal(json_file, settings):
                     "What's the maximum amount you want to spend monthly on shopping?"
                 )
 
-                if settings["goal"].isdigit() == True:
+                if settings["goal"].isdigit():
                     break
                 else:
                     print("Oops! I need a number, try again")
