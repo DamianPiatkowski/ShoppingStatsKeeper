@@ -250,16 +250,16 @@ def do_statistics(veg, curr, g, data, date):
         msg_content = (
             f"Ready for some statistics? There were {str(num_of_entries)} "
             "shopping days "
-            f"this month.\nThis is how this month's expenses compare to "
+            f"last month.\nThis is how last month's expenses compare to "
             f"the average of the previous 3 months..."
-            f"\nThis month's total average is {str(aver_total)} {curr}, "
+            f"\nLast month's total average is {str(aver_total)} {curr}, "
             f"compared to {str(a)} {curr} "
             f"in the previous months.\nMeat expenses: "
-            f"{str(aver_meat)} {curr} this month "
+            f"{str(aver_meat)} {curr} last month "
             f"and {str(b)} {curr} in the previous 3 months."
             f"\nYou spent on average {str(aver_extra)} {curr} a week on extra items, "
             f"{str(c)} {curr} in the compared period."
-            f"\nIn total you spent {str(stat_total)} this month. "
+            f"\nIn total you spent {str(stat_total)} last month. "
             f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
             f"Your goal is to spend no more than {g}. So "
             f"{'congrats' if stat_total <= int(g) else 'better luck next time.'}"
@@ -270,13 +270,13 @@ def do_statistics(veg, curr, g, data, date):
     except KeyError:
         msg_content = (
             f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
-            f"days this month.\nYou spent {str(stat_total)} {curr} in total. "
+            f"days last month.\nYou spent {str(stat_total)} {curr} in total. "
             f"Your goal is to spend no more than {g}, "
             f"so {'congrats' if stat_total <= int(g) else 'better luck next time.'}"
             f"\nOn average you spent {str(aver_total)} {curr} a week, "
             f"{str(aver_meat)}on meat and {str(aver_extra)} on "
             f"extra items.\nWhen there is enough data, I will tell "
-            f"you how the current month compares to the average of "
+            f"you how the reported month compares to the average of "
             f"the three previous ones.\nStay tuned."
         )
 
