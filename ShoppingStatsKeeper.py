@@ -2,42 +2,41 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from email.message import EmailMessage
 import json
+from matplotlib import pyplot as plt
 import os
 import smtplib
-#import matplotlib.pyplot as plt
-#import matplotlib.rcsetup as rcsetup
-#import matplotlib
 
-WELCOME = """
-Hello there!
+WELCOME = """Hello there!
 You went shopping, didn't you?
 I will need some numbers now.
 """
 
+# Environment variables
 EMAIL_ADDRESS = os.environ.get('EMAIL_USER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASS')
 
+today = datetime.date.today()
 
 def main():
-  today = datetime.date.today()
-  
-  load_settings('settings.json')
-  print(WELCOME)
-
-  collect_data(settings["vegetarian?"])
-  load_json()
-  save_new_entry(today, data, new)
-
-  if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
-      do_statistics(
-          settings["vegetarian?"], settings["currency"], settings["goal"], data, today
-      )
-  #make_graph()
-  #send_email(today)
-  save_to_json('data.json', data)
-  change_goal('settings.json', settings)
-
-  input("Hit the enter to exit. Thanks!")
+	print(WELCOME)
+	load_settings('settings.json')
+ 	collect_data(settings["vegetarian?"])
+    load_json()
+    save_new_entry(today, data, new)
+	
+	# Do statistics for the previous month if today's the first entry of the month (first check below)
+	# Second check below checks if there is any data existing before the current month
+    if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
+        do_statistics(
+            settings["vegetarian?"], settings["currency"], 
+			settings["goal"], data, today
+        )
+    
+	#make_graph()
+    #send_email(today)
+    save_to_json('data.json', data)
+    change_goal('settings.json', settings)
+    input("Hit the enter to exit. Thanks!")
 
 def load_settings(json_file):
     """If it's the first time the program is run, 
@@ -52,7 +51,8 @@ def load_settings(json_file):
 
     except FileNotFoundError:
         settings = {}
-        while True:
+        print("But first, please answer these questions:")
+		while True:
             settings["currency"] = input("What's your currency?")
             
             confirmation = input(
@@ -83,14 +83,13 @@ def load_settings(json_file):
         with open(json_file, 'w') as f:
             json.dump(settings, f)
 
-
 def collect_data(veg):
     """Ask three questions, make sure that the input is correct.
     Assign a list of three answers to a variable 'new'.
     """
 
     global new
-    meat = 0
+    meat = 0 # default value for meat 
 
     while True:
 
@@ -173,13 +172,7 @@ def load_json():
         data = {"weekly": {}, "average": {}}
         with open('data.json', 'w') as f:
             json.dump(data, f)
-
-
-def save_to_json(json_file, updated_dict):
-    """Save the updated dictionary to the json file."""
-    with open(json_file, 'w') as f:
-        json.dump(updated_dict, f)
-        
+			
 def save_new_entry(date, data, new_entry):
     """Display the date in the format 'month year'.
     Create a new list for this month if it's the first shopping of the month,
@@ -194,6 +187,8 @@ def save_new_entry(date, data, new_entry):
         data["weekly"][date.strftime("%B %Y")] = [new_entry]
         return data
 
+
+        
 def do_statistics(veg, curr, g, data, date):
     """
     Compare this month's average to the average of the 3 previous months.
@@ -328,9 +323,25 @@ def make_graph():
 
 
     except KeyError:
-        print("When there are enough statistics, a graph will be shown for visualization")
+        print("When there are enough statistics, a graph will be shown for visualization")		
 
+def send_email(date):
+    if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
+        msg = EmailMessage()
+        msg['Subject'] = "Shopping Report"
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = EMAIL_ADDRESS
+        msg.set_content(msg_content)
 
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+
+def save_to_json(json_file, updated_dict):
+    """Save the updated dictionary to the json file."""
+    with open(json_file, 'w') as f:
+        json.dump(updated_dict, f)				   
+				   
 def change_goal(json_file, settings):
     """Each time the program is run, 
     the user will have a chance to change their set goal. 
@@ -364,20 +375,6 @@ def change_goal(json_file, settings):
 
         else:
             print("Oops, something went wrong. Try again with 'yes' or 'no'")
-
-
-def send_email(date):
-    if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
-        msg = EmailMessage()
-        msg['Subject'] = "Shopping Report"
-        msg['From'] = EMAIL_ADDRESS
-        msg['To'] = EMAIL_ADDRESS
-        msg.set_content(msg_content)
-
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            smtp.send_message(msg)
-
 
 if __name__ == '__main__':
     main()
