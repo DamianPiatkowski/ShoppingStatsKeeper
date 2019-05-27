@@ -24,23 +24,23 @@ class TestApp(unittest.TestCase):
             }
         }
         
-        self.short_data = {"weekly": {"April 2019": [[123, 23, 23]]}}
+        self.short_data = {"weekly": {"April 2019": [[123, 23, 23], [200, 50, 60]]}}
 
         self.settings = {"currency": "PLN", "vegetarian?": "no", "goal": "800"}
 
         self.short_message = (             
-            "Ready for statistics?\nThere were 3 shopping "
-            "days this month.\nYou spent 702 PLN in total. "
-            "Your goal is to spend no more than 500, so better luck next time."
-            "\nOn average you spent 234 PLN a week, 15 on meat and 27 on "
+            "Ready for statistics?\nThere were 2 shopping "
+            "days last month.\nYou spent 323 PLN in total. "
+            "Your goal is to spend no more than 500, so congrats."
+            "\nOn average you spent 162 PLN a week, 37 on meat and 47 on "
             "extra items.\nWhen there is enough data, I will tell "
-            "you how the current month compares to the average of "
+            "you how the reported month compares to the average of "
             "the three previous ones.\nStay tuned."
         )
 
         self.long_message = (
             "Ready for some statistics? There were 3 shopping days "
-            "this month.\nThis is how this month's expenses compare to "
+            "last month.\nThis is how this month's expenses compare to "
             "the average of the previous 3 months..."
             "\nThis month's total average is 234 PLN, "
             "compared to 272 PLN "
@@ -87,7 +87,15 @@ class TestApp(unittest.TestCase):
         self.assertEqual(ShoppingStatsKeeper.aver_total, 234)
         self.assertEqual(ShoppingStatsKeeper.aver_meat, 15)
         self.assertEqual(ShoppingStatsKeeper.aver_extra, 27)
+    
+    @freeze_time("2019-05-08")
+    def test_do_statistics_messages(self):
+        
+        ShoppingStatsKeeper.do_statistics("no", "PLN", "500", self.data, datetime.date.today())
         self.assertEqual(ShoppingStatsKeeper.msg_content, self.long_message)
+        
+        ShoppingStatsKeeper.do_statistics("no", "PLN", "500", self.short_data, datetime.date.today())
+        self.assertEqual(ShoppingStatsKeeper.msg_content, self.short_message)
     
     def test_prints_great(self):
         with patch('builtins.print') as mocked_print:
@@ -142,7 +150,7 @@ class TestApp(unittest.TestCase):
             result2,
             {
                 "weekly": {
-                    "April 2019": [[123, 23, 23]],
+                    "April 2019": [[123, 23, 23], [200, 50, 60]],
                            "May 2019": [[1, 2, 3]]
                 }
             }
