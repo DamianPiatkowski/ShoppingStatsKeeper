@@ -191,12 +191,12 @@ def save_new_entry(date, data, new_entry):
         
 def do_statistics(veg, curr, g, data, date):
     """
-    Compare this month's average to the average of the 3 previous months.
-    If there are not enough records, display the shorter information, otherwise
+    Compare last month's average to the average of the 3 previous months.
+    If there are not enough records, display a shorter message, otherwise
     show the longer version.
-    a = average total of the last 3 months
-    b = average meat expenses
-    c = average extra items expenses
+    aver_total_3_months = average total of the 3 months before the reported month
+    aver_meat_3_months = average meat expenses in the same period
+    aver_extra_3_months = average extra items expenses in the same period
     """
 
     global onemonth_before, twomonths_before, threemonths_before, report_month, msg_content, num_of_entries
@@ -212,33 +212,33 @@ def do_statistics(veg, curr, g, data, date):
 
     threemonths_before = (date - relativedelta(months=4)).strftime("%B %Y")                          
 
-    stat_total = 0
-    stat_meat = 0
-    stat_extra = 0
+    total = 0  
+    total_meat = 0 
+    total_extra = 0
 
     for item in data["weekly"][report_month]:
-        stat_total += item[0]
-        stat_meat += item[1]
-        stat_extra += item[2]
+        total += item[0]
+        total_meat += item[1]
+        total_extra += item[2]
 
-    aver_total = round(stat_total / num_of_entries)
-    aver_meat = round(stat_meat / num_of_entries)
-    aver_extra = round(stat_extra / num_of_entries)
+    aver_total = round(total / num_of_entries)
+    aver_meat = round(total_meat / num_of_entries)
+    aver_extra = round(total_extra / num_of_entries)
 
     data["average"][report_month] = [
-        aver_total, aver_meat, aver_extra, stat_total
+        aver_total, aver_meat, aver_extra, total
     ]
 
     try:
-        a = round((data['average'][onemonth_before][0] +
+        aver_total_3_months = round((data['average'][onemonth_before][0] +
              data['average'][twomonths_before][0] +
              data['average'][threemonths_before][0]) / 3)
 
-        b = round((data['average'][onemonth_before][1] +
+        aver_meat_3_months = round((data['average'][onemonth_before][1] +
              data['average'][twomonths_before][1] +
              data['average'][threemonths_before][1]) / 3)
 
-        c = round((data['average'][onemonth_before][2] +
+        aver_extra_3_months = round((data['average'][onemonth_before][2] +
              data['average'][twomonths_before][2] +
              data['average'][threemonths_before][2]) / 3)
 
@@ -248,13 +248,13 @@ def do_statistics(veg, curr, g, data, date):
             f"last month.\nThis is how last month's expenses compare to "
             f"the average of the previous 3 months..."
             f"\nLast month's total average is {str(aver_total)} {curr}, "
-            f"compared to {str(a)} {curr} "
+            f"compared to {str(aver_total_3_months)} {curr} "
             f"in the previous months.\nMeat expenses: "
             f"{str(aver_meat)} {curr} last month "
-            f"and {str(b)} {curr} in the previous 3 months."
+            f"and {str(aver_meat_3_months)} {curr} in the previous 3 months."
             f"\nYou spent on average {str(aver_extra)} {curr} a week on extra items, "
-            f"{str(c)} {curr} in the compared period."
-            f"\nIn total you spent {str(stat_total)} last month. "
+            f"{str(aver_extra_3_months)} {curr} in the compared period."
+            f"\nIn total you spent {str(total)} last month. "
             f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
             f"Your goal is to spend no more than {g}. So "
             f"{'congrats' if stat_total <= int(g) else 'better luck next time.'}"
@@ -265,7 +265,7 @@ def do_statistics(veg, curr, g, data, date):
     except KeyError:
         msg_content = (
             f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
-            f"days last month.\nYou spent {str(stat_total)} {curr} in total. "
+            f"days last month.\nYou spent {str(total)} {curr} in total. "
             f"Your goal is to spend no more than {g}, "
             f"so {'congrats' if stat_total <= int(g) else 'better luck next time.'}"
             f"\nOn average you spent {str(aver_total)} {curr} a week, "
@@ -347,6 +347,7 @@ def change_goal(json_file, settings):
     the user will have a chance to change their set goal. 
     If they dedide to do so, the new value will replace the old one
     in the settings.json file which is required as a parameter.
+    Second function parameter is the existing settings dictionary.
     """
     while True:
         should_change = input(
