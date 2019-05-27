@@ -24,7 +24,7 @@ class TestApp(unittest.TestCase):
             }
         }
         
-        self.short_data = {"weekly": {"April 2019": [[123, 23, 23], [200, 50, 60]]}}
+        self.short_data = {"weekly": {"April 2019": [[123, 23, 23], [200, 50, 60]]}, "average": {}}
 
         self.settings = {"currency": "PLN", "vegetarian?": "no", "goal": "800"}
 
@@ -83,7 +83,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(ShoppingStatsKeeper.threemonths_before, "January 2019")
         self.assertEqual(ShoppingStatsKeeper.report_month, "April 2019")
         self.assertEqual(ShoppingStatsKeeper.num_of_entries, 3)
-        self.assertEqual(ShoppingStatsKeeper.stat_total, 702)
+        self.assertEqual(ShoppingStatsKeeper.total, 702)
         self.assertEqual(ShoppingStatsKeeper.aver_total, 234)
         self.assertEqual(ShoppingStatsKeeper.aver_meat, 15)
         self.assertEqual(ShoppingStatsKeeper.aver_extra, 27)
@@ -152,7 +152,9 @@ class TestApp(unittest.TestCase):
                 "weekly": {
                     "April 2019": [[123, 23, 23], [200, 50, 60]],
                            "May 2019": [[1, 2, 3]]
-                }
+                },
+                "average":{}
+
             }
         )
                 

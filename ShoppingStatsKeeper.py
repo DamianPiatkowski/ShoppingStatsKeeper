@@ -2,7 +2,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from email.message import EmailMessage
 import json
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import os
 import smtplib
 
@@ -24,8 +24,8 @@ def main():
     load_json()
     save_new_entry(today, data, new)
 	
-	# Do statistics for the previous month if today's the first entry of the month (first check below)
-	# Second check below checks if there is any data existing before the current month
+    # Do statistics for the previous month if today's the first entry of the month (first check below)
+    # Second check below checks if there is any data existing before the current month
     if len(data["weekly"][today.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
         do_statistics(
             settings["vegetarian?"], settings["currency"], 
@@ -52,7 +52,7 @@ def load_settings(json_file):
     except FileNotFoundError:
         settings = {}
         print("But first, please answer these questions:")
-		while True:
+        while True:
             settings["currency"] = input("What's your currency?")
             
             confirmation = input(
@@ -200,7 +200,7 @@ def do_statistics(veg, curr, g, data, date):
     """
 
     global onemonth_before, twomonths_before, threemonths_before, report_month, msg_content, num_of_entries
-    global stat_total, aver_meat, aver_extra, aver_total
+    global total, aver_meat, aver_extra, aver_total
 
     report_month = (date - relativedelta(months=1)).strftime("%B %Y")
 
@@ -257,7 +257,7 @@ def do_statistics(veg, curr, g, data, date):
             f"\nIn total you spent {str(total)} last month. "
             f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
             f"Your goal is to spend no more than {g}. So "
-            f"{'congrats' if stat_total <= int(g) else 'better luck next time.'}"
+            f"{'congrats' if total <= int(g) else 'better luck next time.'}"
         )
 
         print(msg_content)
@@ -267,7 +267,7 @@ def do_statistics(veg, curr, g, data, date):
             f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
             f"days last month.\nYou spent {str(total)} {curr} in total. "
             f"Your goal is to spend no more than {g}, "
-            f"so {'congrats' if stat_total <= int(g) else 'better luck next time.'}"
+            f"so {'congrats' if total <= int(g) else 'better luck next time.'}"
             f"\nOn average you spent {str(aver_total)} {curr} a week, "
             f"{str(aver_meat)}on meat and {str(aver_extra)} on "
             f"extra items.\nWhen there is enough data, I will tell "

@@ -9,3 +9,6 @@ venv/
 
 # test file
 *elo*
+
+# cache
+__pycache__
