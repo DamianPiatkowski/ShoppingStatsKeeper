@@ -18,9 +18,9 @@ EMAIL_PASSWORD = os.environ.get('EMAIL_PASS')
 today = datetime.date.today()
 
 def main():
-	print(WELCOME)
-	load_settings('settings.json')
- 	collect_data(settings["vegetarian?"])
+    print(WELCOME)
+    load_settings('settings.json')
+    collect_data(settings["vegetarian?"])
     load_json()
     save_new_entry(today, data, new)
 	
@@ -32,7 +32,7 @@ def main():
 			settings["goal"], data, today
         )
     
-	#make_graph()
+    #make_graph()
     #send_email(today)
     save_to_json('data.json', data)
     change_goal('settings.json', settings)
