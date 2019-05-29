@@ -257,7 +257,7 @@ def do_statistics(veg, curr, g, data, date):
             f"\nIn total you spent {str(total)} last month. "
             f"In {onemonth_before} it was {str(data['average'][onemonth_before][3])}. "
             f"Your goal is to spend no more than {g}. So "
-            f"{'congrats' if total <= int(g) else 'better luck next time.'}"
+            f"{'congrats.' if total <= int(g) else 'better luck next time.'}"
         )
 
         print(msg_content)
@@ -267,9 +267,9 @@ def do_statistics(veg, curr, g, data, date):
             f"Ready for statistics?\nThere were {str(num_of_entries)} shopping "
             f"days last month.\nYou spent {str(total)} {curr} in total. "
             f"Your goal is to spend no more than {g}, "
-            f"so {'congrats' if total <= int(g) else 'better luck next time.'}"
+            f"so {'congrats.' if total <= int(g) else 'better luck next time.'}"
             f"\nOn average you spent {str(aver_total)} {curr} a week, "
-            f"{str(aver_meat)}on meat and {str(aver_extra)} on "
+            f"{str(aver_meat)} on meat and {str(aver_extra)} on "
             f"extra items.\nWhen there is enough data, I will tell "
             f"you how the reported month compares to the average of "
             f"the three previous ones.\nStay tuned."
