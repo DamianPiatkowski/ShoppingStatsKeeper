@@ -55,11 +55,13 @@ class TestApp(unittest.TestCase):
         )
 
     def test_load_settings_existing(self):
+        """Does it load from the existing json?"""
         ShoppingStatsKeeper.load_settings('fixtures/test_existing_settings.json')
 
         self.assertEqual(ShoppingStatsKeeper.settings, {"currency": "PLN", "vegetarian?": "no", "goal": "500"})
 
     def test_load_settings_creating(self):
+    """Does it create a new json with the input values?"""
         with patch('builtins.input') as mocked_input:
             mocked_input.side_effect = ('PLN', 'yes', 'yes', '600')
 
@@ -76,7 +78,8 @@ class TestApp(unittest.TestCase):
 
     @freeze_time("2019-05-08")
     def test_do_statistics_variables(self):
-       
+    """Does it correctly assign variables?"""
+    
         ShoppingStatsKeeper.do_statistics("no", "PLN", "500", self.data, datetime.date.today())
         self.assertEqual(ShoppingStatsKeeper.onemonth_before, "March 2019")
         self.assertEqual(ShoppingStatsKeeper.twomonths_before, "February 2019")
@@ -90,7 +93,8 @@ class TestApp(unittest.TestCase):
     
     @freeze_time("2019-05-08")
     def test_do_statistics_messages(self):
-        
+    """Does it display correct messages?"""
+    
         ShoppingStatsKeeper.do_statistics("no", "PLN", "500", self.data, datetime.date.today())
         self.assertEqual(ShoppingStatsKeeper.msg_content, self.long_message)
         
@@ -98,6 +102,8 @@ class TestApp(unittest.TestCase):
         self.assertEqual(ShoppingStatsKeeper.msg_content, self.short_message)
     
     def test_prints_great(self):
+    """Does it show the correct output message after inputting proper values?"""
+    
         with patch('builtins.print') as mocked_print:
             with patch('builtins.input') as mocked_input:
                 mocked_input.side_effect = (55, 23, 3, 'yes')
@@ -107,7 +113,8 @@ class TestApp(unittest.TestCase):
                 mocked_print.assert_called_with("Great!")
 
     def test_creates_variable(self):
-
+    """Does it create a new entry with input values"""
+    
         with patch('builtins.input') as mocked_input:
             mocked_input.side_effect = (55, 23, 3, 'yes')
 
@@ -116,6 +123,8 @@ class TestApp(unittest.TestCase):
             self.assertEqual(ShoppingStatsKeeper.new, [55, 23, 3])
     
     def test_save_to_json(self):
+    """Does it save correctly to json?"""    
+        
         with open("test.json", "w") as write_file:
             json.dump({"weekly": {"April 2019": [[123, 12, 23]]}}, write_file)
 
@@ -127,6 +136,8 @@ class TestApp(unittest.TestCase):
    
     @freeze_time("2019-05-08")
     def test_save_new_entry(self):
+    """Does it save correctly a new entry?"""    
+        
         # "May 2019" already exists, so the new entry should only be appended
         result = ShoppingStatsKeeper.save_new_entry(datetime.date.today(), self.data, [1, 2, 3])
         print(result)
@@ -159,6 +170,8 @@ class TestApp(unittest.TestCase):
         )
                 
     def test_change_goal(self):
+    """Does it successfully change the goal in settings.json?"""    
+        
         with open("test_settings.json", "w") as write_file:
             json.dump(self.settings, write_file)
         with patch('builtins.input') as mocked_input:
