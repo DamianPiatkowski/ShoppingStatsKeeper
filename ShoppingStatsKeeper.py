@@ -5,6 +5,7 @@ import json
 #from matplotlib import pyplot as plt
 import os
 import smtplib
+from functools import wraps
 
 WELCOME = """Hello there!
 You went shopping, didn't you?
@@ -38,6 +39,18 @@ def main():
     change_goal('settings.json', settings)
     input("Hit the enter to exit. Thanks!")
 
+def logger(func):
+	import logging
+	logging.basicConfig(filename='{}.log'.format(func.__name__), level=logging.INFO)
+	
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		logging.info('Ran with args: {}, and kwargs {}'.format(args, kwargs)
+		return func(*args, **kwargs)
+	
+	return wrapper
+
+@logger					 
 def load_settings(json_file):
     """If it's the first time the program is run, 
     create a json to store the settings.
@@ -83,6 +96,7 @@ def load_settings(json_file):
         with open(json_file, 'w') as f:
             json.dump(settings, f)
 
+@logger	
 def collect_data(veg):
     """Ask three questions, make sure that the input is correct.
     Assign a list of three answers to a variable 'new'.
@@ -153,7 +167,7 @@ def collect_data(veg):
 
     new = [total, meat, extra]
 
-
+@logger	
 def load_json():
     """Load the json file.
     If it's the first time the program is used, create a new json file.
@@ -173,6 +187,7 @@ def load_json():
         with open('data.json', 'w') as f:
             json.dump(data, f)
 			
+@logger	
 def save_new_entry(date, data, new_entry):
     """Display the date in the format 'month year'.
     Create a new list for this month if it's the first shopping of the month,
@@ -188,7 +203,7 @@ def save_new_entry(date, data, new_entry):
         return data
 
 
-        
+@logger	        
 def do_statistics(veg, curr, g, data, date):
     """
     Compare last month's average to the average of the 3 previous months.
@@ -277,6 +292,7 @@ def do_statistics(veg, curr, g, data, date):
 
         print(msg_content)
 
+@logger	
 def make_graph():
     try:
 
@@ -325,6 +341,7 @@ def make_graph():
     except KeyError:
         print("When there are enough statistics, a graph will be shown for visualization")		
 
+@logger	
 def send_email(date):
     if len(data["weekly"][date.strftime("%B %Y")]) == 1 and len(data["weekly"]) > 1:
         msg = EmailMessage()
@@ -337,11 +354,13 @@ def send_email(date):
             smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
             smtp.send_message(msg)
 
+@logger	
 def save_to_json(json_file, updated_dict):
     """Save the updated dictionary to the json file."""
     with open(json_file, 'w') as f:
-        json.dump(updated_dict, f)				   
-				   
+        json.dump(updated_dict, f)		
+
+@logger					   
 def change_goal(json_file, settings):
     """Each time the program is run, 
     the user will have a chance to change their set goal. 
